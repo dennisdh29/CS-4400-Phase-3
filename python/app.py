@@ -36,7 +36,7 @@ class App:
     def Register(self):
         self.rootWin.destroy()
         self.root = Tk()
-        self.root.wm_title("CS 4400 Phase 3")
+        self.root.wm_title("New Student Registration")
 
         Label(self.root, text='Username').grid(row=1, column=0, sticky=W)
         Label(self.root, text='Email').grid(row=2, column=0, sticky=W)
@@ -108,6 +108,8 @@ class App:
             messagebox.showinfo("Congratulations!",
                                 "You have successfully registered!")
             self.db.commit()
+            self.root.destroy()
+            self.LoginPage()
 
         self.cursor.close()
         self.db.close()
@@ -138,8 +140,11 @@ class App:
 
     def MainPage(self):
         self.root = Tk()
-        self.root.wm_title("CS 4400 Phase 3")
-
+        self.root.wm_title("Main Page")
+        self.cursor = self.db.cursor()
+        def addcatrow():
+            print("hello")
+                
         # row 1
         mePage = Button(self.root, text='Me', command=self.MePage)
         mePage.grid(row=1, column=0, sticky=W)
@@ -148,6 +153,21 @@ class App:
         Label(self.root, text='Title').grid(row=2, column=0, sticky=W)
         self.eTitle = Entry(self.root)
         self.eTitle.grid(row=2, column=1)
+        Label(self.root, text='Category').grid(row=2, column = 2, sticky = W)
+        #Categories = self.cursor.execute("SELECT DISTINCT Category FROM Projects, Courses")
+        #Categories = self.cursor.fetchall()
+        CatVar=StringVar(self.root)
+        CatVar.set("Please Select")
+        CatDrop = OptionMenu(self.root, CatVar, 'Categories')
+        CatDrop.grid(row = 2, column =3, padx = 1, pady = 1)
+        AddCat = Button(self.root, text = "Add Another Category", fg= 'blue', relief= 'flat', command = addcatrow)
+        AddCat.grid(row = 2, column = 4)
+        Label(self.root, text='Designation').grid(row=3, column = 0, sticky = W)
+        Label(self.root, text='Major').grid(row=4, column = 0, sticky = W)
+        Label(self.root, text='Year').grid(row=5, column = 0, sticky = W)
+
+        
+        
 
         self.root.mainloop()
 
@@ -167,3 +187,4 @@ class App:
             messagebox.showwarning(
                 "Whoops!", "Please check your internet connection")
 App()
+
