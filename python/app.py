@@ -6,12 +6,7 @@ import pymysql
 class App:
 
     def __init__(self):
-        self.Categories = ['computing for good', 'doing good for your neighborhood',
-                           'reciprocal teaching and learning', 'urban development', 'adaptive learning',
-                           'technology for social good', 'substainable communities', 'crowd-sourced',
-                           'collaborative action']
-
-        self.Designations = ['Substainable Communities', 'Community']
+        self.reg = 0
         self.Years = ['Freshman', 'Sophomore', 'Junior', 'Senior']
         self.Departments = ['College of Computing', 'College of Design', 'College of Engineering',
                             'College of Sciences', 'Ivan Allen College of Liberal Arts',
@@ -19,6 +14,12 @@ class App:
         self.LoginPage()
 
     def LoginPage(self):
+        if self.reg == 1:
+            self.rootreg.destroy()
+            self.rootreg = 0
+        else:
+            self.rootreg = 0
+
         self.rootWin = Tk()
         self.rootWin.wm_title("CS 4400 Phase 3")
 
@@ -45,34 +46,35 @@ class App:
     # self.root.wm_title("CS 4400 Phase 3")
     def Register(self):
         self.rootWin.destroy()
-        self.root = Tk()
-        self.root.wm_title("New Student Registration")
-
-        Label(self.root, text='Username').grid(row=1, column=0, sticky=W)
-        Label(self.root, text='Email').grid(row=2, column=0, sticky=W)
-        Label(self.root, text='Password').grid(row=3, column=0, sticky=W)
-        Label(self.root, text='Confirm Password').grid(
+        self.rootreg = Tk()
+        self.rootreg.wm_title("New Student Registration")
+        self.reg = 1
+        Label(self.rootreg, text='Username').grid(row=1, column=0, sticky=W)
+        Label(self.rootreg, text='Email').grid(row=2, column=0, sticky=W)
+        Label(self.rootreg, text='Password').grid(row=3, column=0, sticky=W)
+        Label(self.rootreg, text='Confirm Password').grid(
             row=4, column=0, sticky=W)
 
-        self.eUser = Entry(self.root)
+        self.eUser = Entry(self.rootreg)
         self.eUser.grid(row=1, column=1)
 
-        self.eEmail = Entry(self.root)
+        self.eEmail = Entry(self.rootreg)
         self.eEmail.grid(row=2, column=1)
 
-        self.ePass = Entry(self.root)
+        self.ePass = Entry(self.rootreg)
         self.ePass.grid(row=3, column=1)
 
-        self.eCPass = Entry(self.root)
+        self.eCPass = Entry(self.rootreg)
         self.eCPass.grid(row=4, column=1)
 
-        # cancel = Button(self.root, text='Cancel', command=self.LoginPage)
-        # cancel.grid(row=6, column=1, sticky=E)
+        cancel = Button(self.rootreg, text='Cancel', command=self.LoginPage)
+        cancel.grid(row=6, column=1, sticky=E)
 
-        register = Button(self.root, text='Register', command=self.RegisterNew)
+        register = Button(self.rootreg, text='Register', command=self.RegisterNew)
         register.grid(row=6, column=2)
 
-        self.root.mainloop()
+        self.rootreg.mainloop()
+
 
     def RegisterNew(self):
 
@@ -152,9 +154,11 @@ class App:
         self.root = Tk()
         self.root.wm_title("Main Page")
         self.cursor = self.db.cursor()
-
+        self.Catnum = 1
         def addcatrow():
-            print("hello")
+            self.Catnum += 1
+            CatDrop1 = OptionMenu(self.root, CatVar1, *Catarray)
+            CatDrop.grid(row=self.Catnum + 2, column=3, padx=1, pady=1)
 
         # row 1
         mePage = Button(self.root, text='Me', command=self.MePage)
@@ -165,11 +169,14 @@ class App:
         self.eTitle = Entry(self.root)
         self.eTitle.grid(row=2, column=1)
         Label(self.root, text='Category').grid(row=2, column=2, sticky=W)
-        # Categories = self.cursor.execute("SELECT DISTINCT Category FROM Projects, Courses")
-        # Categories = self.cursor.fetchall()
+        Categories = self.cursor.execute("SELECT Name FROM Category")
+        Categories = self.cursor.fetchall()
+        Catarray= []
+        for c in Categories:
+            Catarray.append(c[0])
         CatVar = StringVar(self.root)
         CatVar.set("Please Select")
-        CatDrop = OptionMenu(self.root, CatVar, 'Categories')
+        CatDrop = OptionMenu(self.root, CatVar, *Catarray)
         CatDrop.grid(row=2, column=3, padx=1, pady=1)
         AddCat = Button(self.root, text="Add Another Category",
                         fg='blue', relief='flat', command=addcatrow)
@@ -185,14 +192,20 @@ class App:
         YearVar = StringVar(self.root)
         YearVar.set("Please Select")
         YearOpt = ["Freshman", "Sophomore", "Junior", "Senior"]
-        # Designations = self.cursor.execute("SELECT DISTINCT Designation FROM Projects, Courses")
-        # Designations = self.cursor.fetchall()
-        # Majors = self.cursor.execute("SELECT DISTINCT Major FROM Projects, Courses")
-        # Majors = self.cursor.fetchall()
-        DesDrop = OptionMenu(self.root, DesVar, 'Designations')
+        Designations = self.cursor.execute("SELECT DISTINCT Name FROM Designation")
+        Designations = self.cursor.fetchall()
+        Desarray = []
+        for item in Designations:
+            Desarray.append(item[0])
+        Majors = self.cursor.execute("SELECT Name FROM Major")
+        Majors = self.cursor.fetchall()
+        majorArray = []
+        for m in Majors:
+            majorArray.append(m[0])
+        DesDrop = OptionMenu(self.root, DesVar, *Desarray)
         DesDrop.grid(row=3, column=1, padx=1, pady=1)
 
-        MajDrop = OptionMenu(self.root, MaVar, 'Majors')
+        MajDrop = OptionMenu(self.root, MaVar, *majorArray)
         MajDrop.grid(row=4, column=1, padx=1, pady=1)
 
         YearDrop = OptionMenu(self.root, YearVar, *YearOpt)
